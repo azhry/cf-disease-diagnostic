@@ -17,27 +17,36 @@ import java.util.Map;
 public class CertaintyFactor {
     
     private Map<String, Map<String, Double>> diseases;
+    private List<String> symptoms;
+    private Map<String, Double> certaintyWeight;
+    
     
     public CertaintyFactor() {
-        // example data
+        this.symptoms = new ArrayList<>();
         this.diseases = new HashMap<>();
-        Map<String, Double> expertCertaintyFactor = new HashMap<>();
-        expertCertaintyFactor.put("Demam Tinggi", 0.2);
-        expertCertaintyFactor.put("Badan Lemah", 0.4);
-        expertCertaintyFactor.put("Turun Berat Badan", 0.6);
-        expertCertaintyFactor.put("Mengalami Aborsi", 0.4);
-        this.diseases.put("Brucellosis", expertCertaintyFactor);
+        this.certaintyWeight = new HashMap<>();
         
-        Map<String, Double> userCertaintyFactor = new HashMap<>();
-        userCertaintyFactor.put("Demam Tinggi", 1.0);
-        userCertaintyFactor.put("Badan Lemah", 0.8);
-        userCertaintyFactor.put("Turun Berat Badan", 1.0);
-        userCertaintyFactor.put("Mengalami Aborsi", 1.0);
-        
-        this.calculateCertaintyFactor(userCertaintyFactor, expertCertaintyFactor);
+        this.setSymptoms();
+        this.setCertaintyWeight();
+        this.expertCertaintyFactors();
     }
     
-    
+    public Map<String, Double> calculateDiseaseCertaintyFactor(
+            Map<String, Double> userCertaintyFactor) {
+        
+        Map<String, Double> diseaseCertaintyFactor = new HashMap<>();
+        
+        for (Map.Entry<String, Map<String, Double>> e : 
+                this.diseases.entrySet()) {
+            
+            double cf = this.calculateCertaintyFactor(userCertaintyFactor, 
+                    e.getValue());
+            diseaseCertaintyFactor.put(e.getKey(), cf);
+            
+        }
+        
+        return diseaseCertaintyFactor;
+    }
     
     public double calculateCertaintyFactor(
             Map<String, Double> userCertaintyFactor, 
@@ -73,6 +82,43 @@ public class CertaintyFactor {
         
         return multipliedCertaintyFactor;
         
+    }
+    
+    private void setSymptoms() {
+        this.symptoms = new ArrayList<>();
+        this.symptoms.add("Mual dan muntah");
+        this.symptoms.add("Demam");
+        this.symptoms.add("Nyeri dan kram pada bagian perut");
+        this.symptoms.add("Feses lembek / cair");
+        this.symptoms.add("Hilang nafsu makan");
+        this.symptoms.add("Pendarahan saat BAB");
+        this.symptoms.add("Tidak bisa buang gas");
+        this.symptoms.add("Dehidrasi");
+        this.symptoms.add("Mudah merasa lelah");
+        this.symptoms.add("Rasa nyeri di bagian ulu hati hingga dada");
+        this.symptoms.add("Pendarahan di sekitar anus");
+        this.symptoms.add("Sulit dalam bernafas");
+        this.symptoms.add("Merasa nyeri ketika buang air kecil");
+        this.symptoms.add("Perut kembung");
+        this.symptoms.add("Berat badan turun");
+    }
+    
+    private void setCertaintyWeight() {
+        this.certaintyWeight = new HashMap<>();
+        this.certaintyWeight.put("Tidak Ada", 0.0);
+        this.certaintyWeight.put("Ragu-ragu", 0.2);
+        this.certaintyWeight.put("Mungkin", 0.4);
+        this.certaintyWeight.put("Sangat mungkin", 0.6);
+        this.certaintyWeight.put("Hampir pasti", 0.8);
+        this.certaintyWeight.put("Pasti", 1.0);
+    }
+    
+    public List<String> getSymptoms() {
+        return this.symptoms;
+    }
+    
+    public Map<String, Double> getCertaintyWeight() {
+        return this.certaintyWeight;
     }
     
     public Map<String, Map<String, Double>> expertCertaintyFactors() {

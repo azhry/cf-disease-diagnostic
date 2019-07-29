@@ -5,14 +5,17 @@
  */
 package Boundary;
 
+import Control.CertaintyFactor;
+import Control.MathFx;
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
@@ -22,8 +25,10 @@ import javax.swing.table.TableColumn;
  */
 public class Main extends javax.swing.JFrame {
 
-    DefaultCellEditor defaultCellEditor;
-    List<JComboBox> comboboxList;
+    private DefaultCellEditor defaultCellEditor;
+    private List<JComboBox> comboboxList;
+    private CertaintyFactor cf;
+    private List<String> symptoms;
     
     /**
      * Creates new form Main
@@ -31,33 +36,54 @@ public class Main extends javax.swing.JFrame {
     public Main() {
         initComponents();
         
-        // https://stackoverflow.com/questions/457463/putting-jcombobox-into-jtable
+        this.cf = new CertaintyFactor();
+        this.symptoms = this.cf.getSymptoms();
+        
+        this.SymptomsTable.setRowHeight(this.SymptomsTable.getRowHeight() + 3);
+        
+        DefaultTableModel model = (DefaultTableModel)
+                this.SymptomsTable.getModel();
+        model.setRowCount(this.symptoms.size());
+        model.setColumnCount(2);
         
         TableColumn columns = SymptomsTable.getColumnModel().getColumn(1);
         this.comboboxList = new ArrayList<>();
-        JComboBox combobox = new JComboBox(new String[] {"Ragu-ragu", "Yakin"});
-        for (int i = 0; i < 4; i++) {
-            comboboxList.add(new JComboBox(new String[] {"Ragu-ragu", "Yakin"}));
+        JComboBox combobox = new JComboBox(new String[] {
+            "Tidak Ada", "Ragu-ragu", "Mungkin", "Sangat mungkin", 
+            "Hampir pasti", "Pasti"
+        });
+        
+        for (int i = 0; i < this.symptoms.size(); i++) {
+            JComboBox rowCombobox = new JComboBox(new String[] {
+                "Tidak Ada", "Ragu-ragu", "Mungkin", "Sangat mungkin", 
+                "Hampir pasti", "Pasti"
+            });
+            this.comboboxList.add(rowCombobox);
         }
         
         this.defaultCellEditor = new DefaultCellEditor(combobox);
         columns.setCellEditor(this.defaultCellEditor);
-        columns.setCellRenderer(new CheckBoxCellRenderer(this.comboboxList));
+        columns.setCellRenderer(new CheckBoxCellRenderer(this.comboboxList, 
+                this.symptoms));
         SymptomsTable.repaint();
         
     }
     
     class CheckBoxCellRenderer implements TableCellRenderer {
         List<JComboBox> comboboxList;
+        List<String> symptoms;
         
-        public CheckBoxCellRenderer(List<JComboBox> comboboxList) {
+        public CheckBoxCellRenderer(List<JComboBox> comboboxList, 
+                List<String> symptoms) {
             this.comboboxList = comboboxList;
+            this.symptoms = symptoms;
         }
         
         @Override
         public Component getTableCellRendererComponent(JTable jtable, 
                 Object value, boolean isSelected, boolean hasFocus, 
                 int row, int column) {
+            jtable.setValueAt(this.symptoms.get(row), row, 0);
             this.comboboxList.get(row).setSelectedItem(value);
             return this.comboboxList.get(row);
         }
@@ -76,34 +102,40 @@ public class Main extends javax.swing.JFrame {
         TabbedPane = new javax.swing.JTabbedPane();
         jToolBar1 = new javax.swing.JToolBar();
         jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        startDiagnoseButton = new javax.swing.JButton();
         jToolBar2 = new javax.swing.JToolBar();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         SymptomsTable = new javax.swing.JTable();
         jToggleButton1 = new javax.swing.JToggleButton();
+        resultLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jToolBar1.setRollover(true);
 
-        jButton1.setText("Start Diagnose");
+        startDiagnoseButton.setText("Start Diagnose");
+        startDiagnoseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                startDiagnoseButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(100, 100, 100)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(116, Short.MAX_VALUE))
+                .addGap(219, 219, 219)
+                .addComponent(startDiagnoseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(224, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(92, 92, 92)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(125, Short.MAX_VALUE))
+                .addGap(125, 125, 125)
+                .addComponent(startDiagnoseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(163, Short.MAX_VALUE))
         );
 
         jToolBar1.add(jPanel1);
@@ -140,26 +172,35 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
+        resultLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(41, 41, 41)
-                .addComponent(jToggleButton1)
-                .addGap(167, 167, 167))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jToggleButton1)
+                        .addGap(76, 76, 76))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(25, 25, 25)
+                        .addComponent(resultLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(24, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jToggleButton1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(resultLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(165, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         jToolBar2.add(jPanel2);
@@ -170,11 +211,13 @@ public class Main extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(TabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(TabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 594, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(TabbedPane)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(TabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 376, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -182,11 +225,46 @@ public class Main extends javax.swing.JFrame {
 
     private void diagnoseButton(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_diagnoseButton
         
+        Map<String, Double> userCertaintyFactor = new HashMap<>();
+        Map<String, Double> certaintyWeight = this.cf.getCertaintyWeight();
+        
         for (int i = 0; i < this.comboboxList.size(); i++) {
-            System.out.println(this.comboboxList.get(i).getSelectedItem());
+            Object objWeight = this.comboboxList.get(i)
+                    .getSelectedItem();
+            double weight = 0.0;
+            if (objWeight != null) {
+                String strWeight = String.valueOf(objWeight);
+                weight = certaintyWeight.get(strWeight);
+            }
+            userCertaintyFactor.put(this.symptoms.get(i), weight);
         }
         
+        Map<String, Double> diseaseCertaintyFactor = 
+                this.cf.calculateDiseaseCertaintyFactor(userCertaintyFactor);
+        List<Map.Entry<String, Double>> rank = 
+                MathFx.sortMapDouble(diseaseCertaintyFactor, "DESC");
+        
+        StringBuilder resultLabelText = 
+                new StringBuilder("<html>Anda didiagnosa menderita penyakit:<br/>");
+        for (int i = 0; i < rank.size(); i++) {
+            if (i >= 2) {
+                break;
+            }
+            
+            resultLabelText.append("- ")
+                    .append(rank.get(i).getKey())
+                    .append(" dengan tingkat keyakinan ")
+                    .append(rank.get(i).getValue() * 100)
+                    .append("%<br/>");
+        }
+        resultLabelText.append("</html>");
+        this.resultLabel.setText(resultLabelText.toString());
     }//GEN-LAST:event_diagnoseButton
+
+    private void startDiagnoseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startDiagnoseButtonActionPerformed
+        // TODO add your handling code here:
+        this.TabbedPane.setSelectedIndex(1);
+    }//GEN-LAST:event_startDiagnoseButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -226,12 +304,13 @@ public class Main extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable SymptomsTable;
     private javax.swing.JTabbedPane TabbedPane;
-    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
+    private javax.swing.JLabel resultLabel;
+    private javax.swing.JButton startDiagnoseButton;
     // End of variables declaration//GEN-END:variables
 }
