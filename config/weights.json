@@ -1,0 +1,8 @@
+{
+	"Tidak Ada": 0.0,
+	"Ragu-ragu": 0.2,
+	"Mungkin": 0.4,
+	"Sangat mungkin": 0.6,
+	"Hampir pasti": 0.8,
+	"Pasti": 1.0
+}

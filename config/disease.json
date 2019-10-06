@@ -1,0 +1,14 @@
+[
+	{
+		"disease": "Diare",
+		"symptoms": [
+			{
+				"Mual dan muntah": 0.7,
+				"Demam": 0.4,
+				"Nyeri dan kram pada bagian perut": 0.5,
+				"Feses lembek / cair": 0.85,
+				"Dehidrasi": 0.8
+			}
+		]
+	}
+]

@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -86,31 +88,28 @@ public class CertaintyFactor {
     
     private void setSymptoms() {
         this.symptoms = new ArrayList<>();
-        this.symptoms.add("Mual dan muntah");
-        this.symptoms.add("Demam");
-        this.symptoms.add("Nyeri dan kram pada bagian perut");
-        this.symptoms.add("Feses lembek / cair");
-        this.symptoms.add("Hilang nafsu makan");
-        this.symptoms.add("Pendarahan saat BAB");
-        this.symptoms.add("Tidak bisa buang gas");
-        this.symptoms.add("Dehidrasi");
-        this.symptoms.add("Mudah merasa lelah");
-        this.symptoms.add("Rasa nyeri di bagian ulu hati hingga dada");
-        this.symptoms.add("Pendarahan di sekitar anus");
-        this.symptoms.add("Sulit dalam bernafas");
-        this.symptoms.add("Merasa nyeri ketika buang air kecil");
-        this.symptoms.add("Perut kembung");
-        this.symptoms.add("Berat badan turun");
+        List<Object> symptoms = JsonHandler.readJsonFile("config/symptoms.json");
+        for (Object o : symptoms) {
+            this.symptoms.add(o.toString());
+        }
     }
     
     private void setCertaintyWeight() {
         this.certaintyWeight = new HashMap<>();
-        this.certaintyWeight.put("Tidak Ada", 0.0);
-        this.certaintyWeight.put("Ragu-ragu", 0.2);
-        this.certaintyWeight.put("Mungkin", 0.4);
-        this.certaintyWeight.put("Sangat mungkin", 0.6);
-        this.certaintyWeight.put("Hampir pasti", 0.8);
-        this.certaintyWeight.put("Pasti", 1.0);
+        JSONObject weights = JsonHandler
+                .readJsonObjectFile("config/weights.json");
+        Set<String> keys = weights.keySet();
+        for (String key : keys) {
+            this.certaintyWeight
+                    .put(key, Double.parseDouble(weights.get(key).toString()));
+        }
+        
+//        this.certaintyWeight.put("Tidak Ada", 0.0);
+//        this.certaintyWeight.put("Ragu-ragu", 0.2);
+//        this.certaintyWeight.put("Mungkin", 0.4);
+//        this.certaintyWeight.put("Sangat mungkin", 0.6);
+//        this.certaintyWeight.put("Hampir pasti", 0.8);
+//        this.certaintyWeight.put("Pasti", 1.0);
     }
     
     public List<String> getSymptoms() {

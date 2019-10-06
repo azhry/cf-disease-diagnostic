@@ -6,18 +6,21 @@
 package Boundary;
 
 import Control.CertaintyFactor;
+import Control.JsonHandler;
 import Control.MathFx;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -48,16 +51,13 @@ public class Main extends javax.swing.JFrame {
         
         TableColumn columns = SymptomsTable.getColumnModel().getColumn(1);
         this.comboboxList = new ArrayList<>();
-        JComboBox combobox = new JComboBox(new String[] {
-            "Tidak Ada", "Ragu-ragu", "Mungkin", "Sangat mungkin", 
-            "Hampir pasti", "Pasti"
-        });
+        JSONObject weights = 
+                JsonHandler.readJsonObjectFile("config/weights.json");
+        Set<String> keys = weights.keySet();
+        JComboBox combobox = new JComboBox(keys.toArray());
         
         for (int i = 0; i < this.symptoms.size(); i++) {
-            JComboBox rowCombobox = new JComboBox(new String[] {
-                "Tidak Ada", "Ragu-ragu", "Mungkin", "Sangat mungkin", 
-                "Hampir pasti", "Pasti"
-            });
+            JComboBox rowCombobox = new JComboBox(keys.toArray());
             this.comboboxList.add(rowCombobox);
         }
         
