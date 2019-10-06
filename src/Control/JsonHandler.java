@@ -39,6 +39,14 @@ public class JsonHandler {
         }
     }
     
+    public static void updateJsonObjectFile(String filename, JSONObject newValue) {
+        try (FileWriter file = new FileWriter(filename)) {
+            file.write(newValue.toString());
+        } catch (IOException ex) {
+            Logger.getLogger(JsonHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public static JSONObject readJsonObjectFile(String filename) {
         JSONObject json = new JSONObject();
         try (Reader reader = new FileReader(filename)) {
