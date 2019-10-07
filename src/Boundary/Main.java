@@ -10,9 +10,11 @@ import Control.CertaintyFactor;
 import Control.JsonHandler;
 import Control.MathFx;
 import Entity.ButtonColumn;
+import Entity.ButtonColumn2;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +42,7 @@ public class Main extends javax.swing.JFrame {
     private List<JComboBox> comboboxList;
     private CertaintyFactor cf;
     private List<String> symptoms;
+    private List<String> diseases;
     
     /**
      * Creates new form Main
@@ -99,6 +102,35 @@ public class Main extends javax.swing.JFrame {
         };
         
         ButtonColumn buttonColumn = new ButtonColumn(this.symptomsListTable, delete, 1);
+        
+        this.setDiseaseListTable();
+    }
+    
+    public void setDiseaseListTable() {
+        this.cf.expertCertaintyFactors();
+        this.diseases = new ArrayList<>(this.cf.getDiseases().keySet());
+        this.diseaseListTable.setRowHeight(this.diseaseListTable.getRowHeight() + 3);
+        DefaultTableModel diseaseModel = (DefaultTableModel)
+                this.diseaseListTable.getModel();
+        diseaseModel.setRowCount(this.diseases.size());
+        diseaseModel.setColumnCount(2);
+        
+        for (int i = 0; i < this.diseases.size(); i++) {
+            diseaseModel.setValueAt(this.diseases.get(i), i, 0);
+            diseaseModel.setValueAt("Remove", i, 1);
+        }
+        
+        Action delete2 = new AbstractAction()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // extend to nothing
+            }
+            
+        };
+        
+        ButtonColumn2 buttonColumn2 = 
+                new ButtonColumn2(this.diseaseListTable, delete2, 1);
     }
     
     class CheckBoxCellRenderer implements TableCellRenderer {
@@ -150,7 +182,7 @@ public class Main extends javax.swing.JFrame {
         jToolBar4 = new javax.swing.JToolBar();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        diseaseListTable = new javax.swing.JTable();
         diseaseMenu = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -318,18 +350,18 @@ public class Main extends javax.swing.JFrame {
 
         jToolBar4.setRollover(true);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        diseaseListTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Nama Penyakit", "-"
             }
         ));
-        jScrollPane3.setViewportView(jTable1);
+        jScrollPane3.setViewportView(diseaseListTable);
 
         diseaseMenu.setText("Tambah Penyakit Baru");
         diseaseMenu.addActionListener(new java.awt.event.ActionListener() {
@@ -431,7 +463,14 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_symptomsMenuActionPerformed
 
     private void diseaseMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_diseaseMenuActionPerformed
-        new DiseaseMenu().setVisible(true);
+        DiseaseMenu diseaseMenu = new DiseaseMenu();
+        diseaseMenu.setVisible(true);
+        diseaseMenu.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent windowEvent) {
+                setDiseaseListTable();
+            }
+        });
     }//GEN-LAST:event_diseaseMenuActionPerformed
 
     /**
@@ -472,6 +511,7 @@ public class Main extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable SymptomsTable;
     private javax.swing.JTabbedPane TabbedPane;
+    private javax.swing.JTable diseaseListTable;
     private javax.swing.JButton diseaseMenu;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -480,7 +520,6 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable jTable1;
     private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;

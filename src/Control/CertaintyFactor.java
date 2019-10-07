@@ -103,13 +103,6 @@ public class CertaintyFactor {
             this.certaintyWeight
                     .put(key, Double.parseDouble(weights.get(key).toString()));
         }
-        
-//        this.certaintyWeight.put("Tidak Ada", 0.0);
-//        this.certaintyWeight.put("Ragu-ragu", 0.2);
-//        this.certaintyWeight.put("Mungkin", 0.4);
-//        this.certaintyWeight.put("Sangat mungkin", 0.6);
-//        this.certaintyWeight.put("Hampir pasti", 0.8);
-//        this.certaintyWeight.put("Pasti", 1.0);
     }
     
     public List<String> getSymptoms() {
@@ -120,49 +113,30 @@ public class CertaintyFactor {
         return this.certaintyWeight;
     }
     
+    public Map<String, Map<String, Double>> getDiseases() {
+        return this.diseases;
+    }
+    
     public Map<String, Map<String, Double>> expertCertaintyFactors() {
         
         this.diseases = new HashMap<>();
+        List<Object> diseases = JsonHandler.readJsonFile("config/disease.json");
+        for (Object o : diseases) {
+            JSONObject disease = (JSONObject)o;
+            String key = disease.get("disease").toString();
+            
+            JSONObject symptoms = (JSONObject)disease.get("symptoms");
+            Set<String> keys = symptoms.keySet();
+            
+            Map<String, Double> expertCertaintyFactor = new HashMap<>();
+            for (String k : keys) {
+                expertCertaintyFactor.put(k, 
+                        Double.parseDouble(symptoms.get(k).toString()));
+            }
+            
+            this.diseases.put(key, expertCertaintyFactor);
+        }
         
-        Map<String, Double> expertCertaintyFactor1 = new HashMap<>();
-        expertCertaintyFactor1.put("Mual dan muntah", 0.7);
-        expertCertaintyFactor1.put("Demam", 0.4);
-        expertCertaintyFactor1.put("Nyeri dan kram pada bagian perut", 0.5);
-        expertCertaintyFactor1.put("Feses lembek / cair", 0.85);
-        expertCertaintyFactor1.put("Dehidrasi", 0.8);
-        this.diseases.put("Diare", expertCertaintyFactor1);
-        
-        Map<String, Double> expertCertaintyFactor2 = new HashMap<>();
-        expertCertaintyFactor2.put("Nyeri dan kram pada bagian perut", 0.85);
-        expertCertaintyFactor2.put("Hilang nafsu makan", 0.5);
-        expertCertaintyFactor2.put("Pendarahan saat BAB", 0.65);
-        expertCertaintyFactor2.put("Mudah merasa lelah", 0.7);
-        expertCertaintyFactor2.put("Berat badan turun", 0.75);
-        this.diseases.put("Kolitis Ulseratif", expertCertaintyFactor2);
-        
-        Map<String, Double> expertCertaintyFactor3 = new HashMap<>();
-        expertCertaintyFactor3.put("Hilang nafsu makan", 0.8);
-        expertCertaintyFactor3.put("Tidak bisa buang gas", 0.9);
-        expertCertaintyFactor3.put("Merasa nyeri ketika buang air kecil", 0.5);
-        expertCertaintyFactor3.put("Perut kembung", 0.7);
-        expertCertaintyFactor3.put("Berat badan turun", 1.0);
-        this.diseases.put("Apendisitis", expertCertaintyFactor3);
-        
-        Map<String, Double> expertCertaintyFactor4 = new HashMap<>();
-        expertCertaintyFactor4.put("Mual dan muntah", 0.7);
-        expertCertaintyFactor4.put("Hilang nafsu makan", 0.6);
-        expertCertaintyFactor4.put("Rasa nyeri di bagian ulu hati hingga dada", 0.9);
-        expertCertaintyFactor4.put("Sulit dalam bernafas", 0.75);
-        expertCertaintyFactor4.put("Perut kembung", 0.5);
-        this.diseases.put("Ulkus Duodenum", expertCertaintyFactor4);
-        
-        Map<String, Double> expertCertaintyFactor5 = new HashMap<>();
-        expertCertaintyFactor5.put("Mual dan muntah", 0.6);
-        expertCertaintyFactor5.put("Nyeri dan kram pada bagian perut", 0.7);
-        expertCertaintyFactor5.put("Feses lembek / cair", 0.9);
-        expertCertaintyFactor5.put("Hilang nafsu makan", 0.5);
-        expertCertaintyFactor5.put("Pendarahan di sekitar anus", 0.6);
-        this.diseases.put("Disentri", expertCertaintyFactor5);
         
         return this.diseases;
     }

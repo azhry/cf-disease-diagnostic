@@ -6,8 +6,13 @@
 package Boundary;
 
 import Control.CertaintyFactor;
+import Control.JsonHandler;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -22,6 +27,7 @@ public class DiseaseMenu extends javax.swing.JFrame {
         initComponents();
         DefaultTableModel model = 
                 (DefaultTableModel)this.symptomsListTable.getModel();
+        
         CertaintyFactor cf = new CertaintyFactor();
         List<String> symptoms = cf.getSymptoms();
         model.setRowCount(symptoms.size());
@@ -29,7 +35,12 @@ public class DiseaseMenu extends javax.swing.JFrame {
         
         for (int i = 0; i < symptoms.size(); i++) {
             model.setValueAt(symptoms.get(i), i, 0);
+            model.setValueAt(0.0, i, 1);
         }
+        
+//        symptomsListTable.changeSelection(1, 1, false, false);
+//        symptomsListTable.editCellAt(1, 1);
+//        symptomsListTable.getEditorComponent().requestFocusInWindow();
     }
     
     /**
@@ -74,6 +85,11 @@ public class DiseaseMenu extends javax.swing.JFrame {
         jLabel1.setText("Nama Penyakit");
 
         addNewDiseaseButton.setText("Tambah Penyakit");
+        addNewDiseaseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addNewDiseaseButtonActionPerformed(evt);
+            }
+        });
 
         closeButton.setText("Tutup");
         closeButton.addActionListener(new java.awt.event.ActionListener() {
@@ -117,6 +133,53 @@ public class DiseaseMenu extends javax.swing.JFrame {
     private void closeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonActionPerformed
         this.dispose();
     }//GEN-LAST:event_closeButtonActionPerformed
+
+    private void addNewDiseaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addNewDiseaseButtonActionPerformed
+        String diseaseName = this.diseaseNameTextField.getText();
+        if (diseaseName.equals("")) {
+            JOptionPane.showMessageDialog(null, 
+                    "Anda harus memberi nama penyakit");
+            return;
+        }
+        
+        if (this.symptomsListTable.isEditing()) {
+            this.symptomsListTable.getCellEditor().stopCellEditing();
+        }
+        
+        DefaultTableModel model = 
+                (DefaultTableModel)this.symptomsListTable.getModel();
+        
+        int numSelectedSymptoms = 0;
+        JSONObject symptoms = new JSONObject();
+        for (int i = 0; i < model.getRowCount(); i++) {
+            Object checkbox = model.getValueAt(i, 2);
+            if (checkbox != null && (boolean)checkbox == true) {
+                String symptom = model.getValueAt(i, 0).toString();
+                double weight = 
+                        Double.parseDouble(model.getValueAt(i, 1).toString());
+                symptoms.put(symptom, weight);
+                numSelectedSymptoms++;
+            }
+        }
+        
+            
+        if (numSelectedSymptoms <= 0) {
+            JOptionPane.showMessageDialog(null, 
+                    "Anda harus memilih setidaknya satu gejala");
+            return;
+        }
+        
+        JSONObject data = new JSONObject();
+        data.put("disease", diseaseName);
+        data.put("symptoms", symptoms);
+        
+        List<Object> oldData = JsonHandler.readJsonFile("config/disease.json");
+        oldData.add(data);
+        JsonHandler.updateJsonFile("config/disease.json", oldData);
+        JOptionPane.showMessageDialog(null, 
+                    "Data penyakit baru berhasil ditambahkan");
+        this.dispose();
+    }//GEN-LAST:event_addNewDiseaseButtonActionPerformed
 
     /**
      * @param args the command line arguments

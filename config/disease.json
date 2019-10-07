@@ -1,14 +1,1 @@
-[
-	{
-		"disease": "Diare",
-		"symptoms": [
-			{
-				"Mual dan muntah": 0.7,
-				"Demam": 0.4,
-				"Nyeri dan kram pada bagian perut": 0.5,
-				"Feses lembek / cair": 0.85,
-				"Dehidrasi": 0.8
-			}
-		]
-	}
-]
+[{"symptoms":{"Mual dan muntah":0.7,"Nyeri dan kram pada bagian perut":0.5,"Demam":0.4,"Feses lembek \/ cair":0.85,"Dehidrasi":0.8},"disease":"Diare"},{"symptoms":{"Mudah merasa lelah":0.7,"Nyeri dan kram pada bagian perut":0.85,"Hilang nafsu makan":0.5,"Berat badan turun":0.75,"Pendarahan saat BAB":0.65},"disease":"Kolitis Ulseratif"},{"symptoms":{"Tidak bisa buang gas":0.9,"Perut kembung":0.7,"Hilang nafsu makan":0.8,"Berat badan turun":1.0,"Merasa nyeri ketika buang air kecil":0.5},"disease":"Apendisitis"},{"symptoms":{"Perut kembung":0.5,"Rasa nyeri di bagian ulu hati hingga dada":0.9,"Sulit dalam bernafas":0.75,"Mual dan muntah":0.7,"Hilang nafsu makan":0.6},"disease":"Ulkus Duodenum"},{"symptoms":{"Mual dan muntah":0.6,"Nyeri dan kram pada bagian perut":0.7,"Hilang nafsu makan":0.5,"Feses lembek \/ cair":0.9,"Pendarahan di sekitar anus":0.6},"disease":"Disentri"}]
