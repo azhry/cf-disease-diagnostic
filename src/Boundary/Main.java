@@ -51,6 +51,8 @@ public class Main extends javax.swing.JFrame {
         initComponents();
         if (!Auth.isAuthenticated()) {
             this.logoutButton.setText("Login");
+            this.TabbedPane.remove(2);
+            this.TabbedPane.remove(2);
         }
         
         this.cf = new CertaintyFactor();
